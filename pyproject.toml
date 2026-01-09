@@ -1,18 +1,36 @@
 [project]
 name = "nicegui-aggrid-enterprise"
-version = "0.1.5"
-description = "Use Aggrid Enterprise in your NiceGUI app."
+version = "0.2.0"
+description = "Use AG Grid Enterprise in your NiceGUI app."
 authors = [{name = "Alex Pilon", email="alex.pilon@gmail.com"}]
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "nicegui>=2.4.0",
+    "nicegui>=3.0.0",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nicegui_aggrid_enterprise"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+
+[tool.hatch.build]
+exclude = [
+    "src/nicegui_aggrid_enterprise/node_modules",
+    "src/nicegui_aggrid_enterprise/src",
+    "src/nicegui_aggrid_enterprise/package.json",
+    "src/nicegui_aggrid_enterprise/package-lock.json",
+    "src/nicegui_aggrid_enterprise/rollup.config.mjs",
+]
+artifacts = [
+    "src/nicegui_aggrid_enterprise/dist",
+]
 
 [tool.ruff]
 indent-width = 4

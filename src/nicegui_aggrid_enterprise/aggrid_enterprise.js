@@ -1,19 +1,37 @@
-import "ag-grid-enterprise";
+import AgGrid from "nicegui-aggrid-enterprise";
 import { convertDynamicProperties } from "../../static/utils/dynamic_properties.js";
 
 export default {
   template: "<div></div>",
   mounted() {
     this.update_grid();
+
+    const updateTheme = () =>
+      this.$el.setAttribute("data-ag-theme-mode", document.body.classList.contains("body--dark") ? "dark" : "light");
+    this.themeObserver = new MutationObserver(updateTheme);
+    this.themeObserver.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    updateTheme();
+  },
+  unmounted() {
+    this.themeObserver.disconnect();
   },
   methods: {
     update_grid() {
       this.$el.textContent = "";
-      this.gridOptions = { ...this.options };
-      for (const column of this.html_columns) {
+
+      // Set license key before creating grid
+      if (this.licenseKey) {
+        AgGrid.LicenseManager.setLicenseKey(this.licenseKey);
+      }
+
+      this.gridOptions = {
+        ...this.options,
+        theme: AgGrid.themes[this.options.theme].withPart(AgGrid.colorSchemeVariable),
+      };
+
+      for (const column of this.htmlColumns) {
         if (this.gridOptions.columnDefs[column].cellRenderer === undefined) {
-          this.gridOptions.columnDefs[column].cellRenderer = (params) =>
-            params.value ? params.value : "";
+          this.gridOptions.columnDefs[column].cellRenderer = (params) => (params.value ? params.value : "");
         }
       }
       convertDynamicProperties(this.gridOptions, true);
@@ -42,10 +60,16 @@ export default {
       this.gridOptions.components = {
         checkboxRenderer: CheckboxRenderer,
       };
-      if (this.license_key) {
-        agGrid.LicenseManager.setLicenseKey(this.license_key);
-      }
-      this.api = agGrid.createGrid(this.$el, this.gridOptions);
+
+      const originalOnGridReady = this.gridOptions.onGridReady;
+      this.gridOptions.onGridReady = (params) => {
+        try {
+          originalOnGridReady?.(params);
+        } finally {
+          this.handle_event("gridReady", params);
+        }
+      };
+      this.api = AgGrid.createGrid(this.$el, this.gridOptions);
       this.api.addGlobalListener(this.handle_event);
     },
     run_grid_method(name, ...args) {
@@ -57,12 +81,6 @@ export default {
       return runMethod(this.api.getRowNode(row_id), name, args);
     },
     handle_event(type, args) {
-      if (
-        (type === "gridReady" || type === "gridSizeChanged") &&
-        this.auto_size_columns
-      ) {
-        this.api.sizeColumnsToFit();
-      }
       this.$emit(type, {
         value: args.value,
         oldValue: args.oldValue,
@@ -99,8 +117,7 @@ export default {
   },
   props: {
     options: Object,
-    html_columns: Array,
-    auto_size_columns: Boolean,
-    license_key: String,
+    htmlColumns: Array,
+    licenseKey: String,
   },
 };
