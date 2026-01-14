@@ -2,10 +2,11 @@
 
 from nicegui import ui
 
-from nicegui_aggrid_enterprise import aggrid
+from nicegui_aggrid_enterprise import AgGridEnterprise, AgGridEnterpriseCharts
 
 # Set your license key here (or leave as None to test without - watermark will show)
-aggrid.license_key = None  # "YOUR_LICENSE_KEY_HERE"
+AgGridEnterprise.license_key = None  # "YOUR_LICENSE_KEY_HERE"
+AgGridEnterpriseCharts.license_key = None  # "YOUR_LICENSE_KEY_HERE"
 
 # Sample data
 ROW_DATA = [
@@ -28,8 +29,10 @@ def main():
         label="Theme",
     ).classes("w-48")
 
-    # Basic grid with enterprise features
-    grid = aggrid(
+    # --- AgGridEnterprise (Community Charts) ---
+    ui.label("AgGridEnterprise (with AG Charts Community)").classes("text-lg font-semibold mt-4")
+
+    grid = AgGridEnterprise(
         {
             "columnDefs": [
                 {"headerName": "Make", "field": "make", "sortable": True, "filter": True},
@@ -48,9 +51,33 @@ def main():
                 },
             ],
             "rowData": ROW_DATA,
-            "rowSelection": "multiple",
-            "enableRangeSelection": True,  # Enterprise feature
-            "enableCharts": True,  # Enterprise feature
+            "rowSelection": {"mode": "multiRow"},  # New v32+ syntax
+            "cellSelection": True,  # Replaces enableRangeSelection
+            "enableCharts": True,  # Charts enabled (community)
+        },
+        theme="quartz",
+    )
+
+    # --- AgGridEnterpriseCharts (Enterprise Charts) ---
+    ui.label("AgGridEnterpriseCharts (with AG Charts Enterprise)").classes("text-lg font-semibold mt-6")
+
+    grid_charts = AgGridEnterpriseCharts(
+        {
+            "columnDefs": [
+                {"headerName": "Make", "field": "make", "sortable": True, "filter": True, "chartDataType": "category"},
+                {"headerName": "Model", "field": "model", "sortable": True, "filter": True},
+                {
+                    "headerName": "Price",
+                    "field": "price",
+                    "sortable": True,
+                    "filter": "agNumberColumnFilter",
+                    "chartDataType": "series",
+                },
+            ],
+            "rowData": ROW_DATA,
+            "rowSelection": {"mode": "multiRow"},  # New v32+ syntax
+            "cellSelection": True,  # Replaces enableRangeSelection
+            "enableCharts": True,  # Enterprise charts with full features
         },
         theme="quartz",
     )
@@ -59,6 +86,8 @@ def main():
     def update_theme():
         grid.theme = theme_select.value
         grid.update()
+        grid_charts.theme = theme_select.value
+        grid_charts.update()
 
     theme_select.on_value_change(update_theme)
 
@@ -106,7 +135,7 @@ def main():
             }
         )
 
-        aggrid.from_pandas(df, theme="alpine")
+        AgGridEnterprise.from_pandas(df, theme="alpine")
 
     except ImportError:
         ui.label("Install pandas to see DataFrame example").classes("text-gray-500 mt-4")

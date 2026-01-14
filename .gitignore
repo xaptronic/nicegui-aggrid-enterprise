@@ -30,11 +30,14 @@ ENV/
 *.swp
 *.swo
 
-# Node.js - these should be rebuilt, not committed
+# Node.js - these should be rebuilt by user, not committed
 src/nicegui_aggrid_enterprise/node_modules/
 
-# Build artifacts that need to be committed (dist is required for the package)
-# Note: src/nicegui_aggrid_enterprise/dist/ should be committed as it's the built JS bundle
+# JS bundles - built by user via `nicegui-aggrid-enterprise build`
+# Not distributed with package due to AG Grid Enterprise licensing
+src/nicegui_aggrid_enterprise/dist/
+src/nicegui_aggrid_enterprise/dist-enterprise-charts/
+src/nicegui_aggrid_enterprise/package-lock.json
 
 # OS
 .DS_Store

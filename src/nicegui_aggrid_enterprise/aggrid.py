@@ -1,4 +1,5 @@
 import importlib.util
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Self, cast
 
 from nicegui.awaitable_response import AwaitableResponse
@@ -14,6 +15,22 @@ if importlib.util.find_spec("polars"):
 
 # Type alias for theme
 ThemeType = Literal["quartz", "balham", "material", "alpine"] | None
+
+# Package directory
+_PACKAGE_DIR = Path(__file__).parent
+
+
+def _check_bundle_exists(bundle_dir: str) -> None:
+    """Check if the JavaScript bundle exists, raise helpful error if not."""
+    bundle_path = _PACKAGE_DIR / bundle_dir / "index.js"
+    if not bundle_path.exists():
+        raise RuntimeError(
+            f"AG Grid Enterprise JavaScript bundle not found at {bundle_path}\n\n"
+            "The JavaScript bundles must be built before use.\n"
+            "Run the following command to build them:\n\n"
+            "    nicegui-aggrid-enterprise build\n\n"
+            "This requires Node.js to be installed on your system."
+        )
 
 
 class AgGridEnterprise(
@@ -51,6 +68,7 @@ class AgGridEnterprise(
         :param theme: AG Grid theme (default: ``options['theme']`` or "quartz")
         :param auto_size_columns: whether to automatically resize columns (default: ``True``)
         """
+        _check_bundle_exists("dist")
         super().__init__()
         if html_columns is None:
             html_columns = []
@@ -372,6 +390,7 @@ class AgGridEnterpriseCharts(
         :param theme: AG Grid theme (default: ``options['theme']`` or "quartz")
         :param auto_size_columns: whether to automatically resize columns (default: ``True``)
         """
+        _check_bundle_exists("dist-enterprise-charts")
         super().__init__()
         if html_columns is None:
             html_columns = []

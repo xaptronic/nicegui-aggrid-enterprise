@@ -10,6 +10,9 @@ dependencies = [
     "nicegui>=3.0.0",
 ]
 
+[project.scripts]
+nicegui-aggrid-enterprise = "nicegui_aggrid_enterprise.cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -21,17 +24,14 @@ packages = ["src/nicegui_aggrid_enterprise"]
 "src" = ""
 
 [tool.hatch.build]
+# Include source files for user-side building (exclude pre-built bundles)
 exclude = [
     "src/nicegui_aggrid_enterprise/node_modules",
-    "src/nicegui_aggrid_enterprise/src",
-    "src/nicegui_aggrid_enterprise/package.json",
     "src/nicegui_aggrid_enterprise/package-lock.json",
-    "src/nicegui_aggrid_enterprise/rollup.config.mjs",
-]
-artifacts = [
     "src/nicegui_aggrid_enterprise/dist",
     "src/nicegui_aggrid_enterprise/dist-enterprise-charts",
 ]
+# Source files are included by default - package.json, rollup.config.mjs, src/*.mjs
 
 [tool.ruff]
 indent-width = 4
