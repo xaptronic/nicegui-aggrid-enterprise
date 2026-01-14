@@ -1,17 +1,32 @@
 import nodeResolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
 
-export default {
-  input: "./src/index.mjs",
-  output: {
-    dir: "./dist/",
-    format: "es",
-    sourcemap: true,
+const commonPlugins = [
+  nodeResolve(),
+  terser({
+    mangle: true,
+  }),
+];
+
+export default [
+  // Community charts bundle (AgGridEnterprise)
+  {
+    input: "./src/index.mjs",
+    output: {
+      file: "./dist/index.js",
+      format: "es",
+      sourcemap: true,
+    },
+    plugins: commonPlugins,
   },
-  plugins: [
-    nodeResolve(),
-    terser({
-      mangle: true,
-    }),
-  ],
-};
+  // Enterprise charts bundle (AgGridEnterpriseCharts)
+  {
+    input: "./src/index-enterprise-charts.mjs",
+    output: {
+      file: "./dist-enterprise-charts/index.js",
+      format: "es",
+      sourcemap: true,
+    },
+    plugins: commonPlugins,
+  },
+];

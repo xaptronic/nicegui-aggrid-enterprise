@@ -30,6 +30,7 @@ exclude = [
 ]
 artifacts = [
     "src/nicegui_aggrid_enterprise/dist",
+    "src/nicegui_aggrid_enterprise/dist-enterprise-charts",
 ]
 
 [tool.ruff]

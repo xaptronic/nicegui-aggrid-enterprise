@@ -9,12 +9,12 @@ import {
   colorSchemeVariable,
 } from "ag-grid-community";
 import { AllEnterpriseModule, LicenseManager, IntegratedChartsModule } from "ag-grid-enterprise";
-import { AgChartsCommunityModule } from "ag-charts-community";
+import { AgChartsEnterpriseModule } from "ag-charts-enterprise";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
   AllEnterpriseModule,
-  IntegratedChartsModule.with(AgChartsCommunityModule),
+  IntegratedChartsModule.with(AgChartsEnterpriseModule),
 ]);
 
 export default {
